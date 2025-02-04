@@ -1,4 +1,4 @@
-# empty-example
+# P5.js playground
 
 To install dependencies:
 
@@ -9,7 +9,9 @@ bun install
 To run:
 
 ```bash
-bun run sketch.js
+bun run build
 ```
 
-This project was created using `bun init` in bun v1.1.1. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+This launches a watcher that re-compiles the src folder on change.
+
+Use this in conjunction with an extension like [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) to enable real-time editing support in the browser.
