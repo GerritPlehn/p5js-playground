@@ -10,10 +10,14 @@ const watcher = watch(
       new Bun.Glob('src/**/index.html').scanSync()
     );
     await $`rm -rf out`;
-    Bun.build({
-      entrypoints,
-      outdir: 'out',
-    });
+    try {
+      await Bun.build({
+        entrypoints,
+        outdir: 'out',
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 );
 
