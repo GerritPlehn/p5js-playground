@@ -14,6 +14,7 @@ const watcher = watch(
       await Bun.build({
         entrypoints,
         outdir: 'out',
+        sourcemap: 'linked',
       });
     } catch (error) {
       console.error(error);
