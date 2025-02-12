@@ -15,7 +15,9 @@ function sketch(p: P5) {
   const w = Math.floor(width / cellSize);
   const h = Math.floor(height / cellSize);
   const field = createArray(w, h, 0);
+  const grains: [number, number][] = [];
   const grains: Record<number, number>[] = [];
+  const grains: [number, number][] = [];
   let updateTime = 0;
   let drawTime = 0;
 
@@ -41,8 +43,7 @@ function sketch(p: P5) {
   function updateField() {
     const updateStart = performance.now();
     for (const grain of grains) {
-      const i = grain[0];
-      const j = grain[1];
+      const [i, j] = grain;
       if (i === field.length - 1) {
         continue;
       }
@@ -73,11 +74,11 @@ function sketch(p: P5) {
   }
 
   function drawField() {
-    const drawStart = performance.now();
+      const [i, j] = cell;
     p.background(0);
     for (const grain of grains) {
       const i = grain[0];
-      const j = grain[1];
+      const [i, j] = cell;
       p.square(j * cellSize, i * cellSize, cellSize);
     }
     drawTime = performance.now() - drawStart;
