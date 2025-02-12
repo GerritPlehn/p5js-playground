@@ -16,8 +16,7 @@ function sketch(p: P5) {
   const h = Math.floor(height / cellSize);
   const field = createArray(w, h, 0);
   const grains: [number, number][] = [];
-  const grains: Record<number, number>[] = [];
-  const grains: [number, number][] = [];
+  let changedCells: [number, number][] = [];
   let updateTime = 0;
   let drawTime = 0;
 
@@ -27,21 +26,26 @@ function sketch(p: P5) {
     p.noStroke(); // 4862 without stroke, 2730 with stroke
     p.fill(255);
     p.textSize(10);
+    p.background(0);
   };
 
   p.draw = () => {
     drawField();
     updateField();
+    p.strokeWeight(5);
+    p.stroke(0);
     p.text(`Grains: ${grains.length}`, 10, height - 30);
     p.text(`FPS: ${p.frameRate().toFixed(2)}`, 10, height - 20);
     p.text(`draw: ${drawTime.toFixed(2)}`, 10, height - 10);
     p.text(`update: ${updateTime.toFixed(2)}`, 10, height - 0);
-    if (drawTime > 5) p.noLoop();
+    p.noStroke();
+    // if (drawTime > 5) p.noLoop();
     // p.noLoop();
   };
 
   function updateField() {
     const updateStart = performance.now();
+    changedCells = [];
     for (const grain of grains) {
       const [i, j] = grain;
       if (i === field.length - 1) {
@@ -53,32 +57,38 @@ function sketch(p: P5) {
         field[i][j] = 0;
         field[i + 1][j] = 1;
         grain[0] = i + 1;
+        changedCells.push([i, j], [i + 1, j]);
+
         continue;
       }
 
-      const cellBelowL = field[i + 1][j - 1];
-      const cellBelowR = field[i + 1][j + 1];
-      if (cellBelowL === 0) {
+      const dir = Math.random() > 0.5 ? -1 : 1;
+      const offsetA = j - dir;
+      const offsetB = j + dir;
+      const cellBelowA = field[i + 1][offsetA];
+      const cellBelowB = field[i + 1][offsetB];
+      if (cellBelowA === 0) {
         field[i][j] = 0;
-        field[i][j - 1] = 1;
-        grain[1] = j - 1;
+        field[i][offsetA] = 1;
+        grain[1] = offsetA;
+        changedCells.push([i, j], [i, offsetA]);
         continue;
       }
-      if (cellBelowR === 0) {
+      if (cellBelowB === 0) {
         field[i][j] = 0;
-        field[i][j + 1] = 1;
-        grain[1] = j + 1;
+        field[i][offsetB] = 1;
+        grain[1] = offsetB;
+        changedCells.push([i, j], [i, offsetB]);
       }
     }
     updateTime = performance.now() - updateStart;
   }
 
   function drawField() {
+    const drawStart = performance.now();
+    for (const cell of changedCells) {
       const [i, j] = cell;
-    p.background(0);
-    for (const grain of grains) {
-      const i = grain[0];
-      const [i, j] = cell;
+      p.fill(field[i][j] === 1 ? 255 : 0);
       p.square(j * cellSize, i * cellSize, cellSize);
     }
     drawTime = performance.now() - drawStart;
@@ -89,10 +99,16 @@ function sketch(p: P5) {
     const col = Math.floor(mouseX / cellSize);
     field[row][col] = 1;
     grains.push([row, col]);
+    changedCells.push([row, col]);
   }
 
   p.mouseDragged = () => {
-    spawSand(p.mouseX, p.mouseY);
+    for (let i = 0; i < 10; i++) {
+      spawSand(
+        p.mouseX + (Math.random() * 10 - 10),
+        p.mouseY + (Math.random() * 10 - 10)
+      );
+    }
   };
 }
 
