@@ -9,8 +9,8 @@ function createArray<T>(width: number, height: number, defaultValue?: T) {
 }
 
 function sketch(p: P5) {
-  const width = 400;
-  const height = 400;
+  const width = 800;
+  const height = 800;
   const cellSize = 2;
   const w = Math.floor(width / cellSize);
   const h = Math.floor(height / cellSize);
@@ -21,7 +21,7 @@ function sketch(p: P5) {
   let drawTime = 0;
 
   p.setup = () => {
-    p.createCanvas(400, 400);
+    p.createCanvas(width, height);
     p.frameRate(144);
     p.noStroke(); // 4862 without stroke, 2730 with stroke
     p.fill(255);
@@ -87,14 +87,16 @@ function sketch(p: P5) {
   function drawField() {
     const drawStart = performance.now();
     for (const cell of changedCells) {
+      // destructive assignment
       const [i, j] = cell;
+      // ternary operator
       p.fill(field[i][j] === 1 ? 255 : 0);
       p.square(j * cellSize, i * cellSize, cellSize);
     }
     drawTime = performance.now() - drawStart;
   }
 
-  function spawSand(mouseX: number, mouseY: number) {
+  function spawnSand(mouseX: number, mouseY: number) {
     const row = Math.floor(mouseY / cellSize);
     const col = Math.floor(mouseX / cellSize);
     field[row][col] = 1;
@@ -104,7 +106,7 @@ function sketch(p: P5) {
 
   p.mouseDragged = () => {
     for (let i = 0; i < 10; i++) {
-      spawSand(
+      spawnSand(
         p.mouseX + (Math.random() * 10 - 10),
         p.mouseY + (Math.random() * 10 - 10)
       );
